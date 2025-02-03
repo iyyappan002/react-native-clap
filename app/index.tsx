@@ -1,4 +1,5 @@
 import { useLoginMutation } from "@/api/mutations";
+import { usePost } from "@/context/PostContext";
 import { storeStorageItem } from "@/utils/storage";
 import { router } from "expo-router";
 import { useFormik } from "formik";
@@ -21,6 +22,8 @@ import * as Yup from "yup";
 export default function LoginScreen() {
 
   const loginMutation = useLoginMutation();
+  const { setUserData } = usePost();
+
 
   //   const isLoggedIn = useSelector(state => state?.auth?.isLoggedIn);
 
@@ -37,6 +40,7 @@ export default function LoginScreen() {
           if (response.status == 200) {
             await storeStorageItem('authToken', response?.data?.result?.accessToken)
             await storeStorageItem('userId', `${response?.data?.result?.userId}`)
+            setUserData(response?.data?.result)
             router.replace("/posts");
           }
         },
