@@ -1,19 +1,14 @@
 import { usePostsQuery } from '@/api/queries'
-import PostCard from '@/components/posts/PoctCard';
+import PostCard from '@/components/posts/PostCard';
+import PostList from '@/components/posts/PostList';
 import { Post } from '@/types/postTypes';
 import React from 'react'
-import { Text, View } from 'react-native'
+import { ActivityIndicator, Text, View } from 'react-native'
 
 function Index() {
-  const { data, error, isLoading } = usePostsQuery()
-
   return (
     <View>
-      {data?.pages.map(response => {
-        return response.data?.posts?.map((post: Post) => {
-          return <PostCard post={post} />
-        })
-      })}
+      <PostList />
     </View>
   )
 }
