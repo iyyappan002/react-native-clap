@@ -71,27 +71,27 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
 
   const pickImage = async () => {
     // Request permission to access media
-    if (Platform.OS !== "web") {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Sorry, we need permission to access your camera roll!");
-        return;
-      }
-    }
+    // if (Platform.OS !== "web") {
+    //   const { status } =
+    //     await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //   if (status !== "granted") {
+    //     alert("Sorry, we need permission to access your camera roll!");
+    //     return;
+    //   }
+    // }
 
-    // Launch image picker
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaType: ImagePicker.MediaTypeOptions.Images,
-      aspect: [4, 3],
-      quality: 1,
-      allowsMultipleSelection: true,
-    });
+    // // Launch image picker
+    // const result = await ImagePicker.launchImageLibraryAsync({
+    //   mediaType: ImagePicker.MediaTypeOptions.Images,
+    //   aspect: [4, 3],
+    //   quality: 1,
+    //   allowsMultipleSelection: true,
+    // });
 
-    if (!result.canceled) {
-      const selectedImages = result.assets.map((asset :any) => asset.uri); // Collect image URIs
-      postformik.setFieldValue("images", selectedImages);
-    }
+    // if (!result.canceled) {
+    //   const selectedImages = result.assets.map((asset :any) => asset.uri); // Collect image URIs
+    //   postformik.setFieldValue("images", selectedImages);
+    // }
   };
 
   console.log(postformik.values.images, "images");
@@ -100,7 +100,7 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
     <ScrollView>
       <View style={styles.postContainer}>
         <View style={styles.field}>
-          <Text>Title</Text>
+          <Text style={styles.label}>Title</Text>
           <TextInput
             id="name"
             style={styles.textInput}
@@ -113,7 +113,7 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
           )}
         </View>
         <View style={styles.field}>
-          <Text>Appreciate Employee</Text>
+          <Text style={styles.label}>Appreciate Employee</Text>
 
           <TextInput
             style={styles.textInput}
@@ -151,7 +151,7 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
           )}
         </View>
         <View style={styles.field}>
-          <Text>Description</Text>
+          <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.textArea}
             multiline={true}
@@ -166,7 +166,7 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
         </View>
 
         <View style={styles.field}>
-          <Text>Upload Images</Text>
+          <Text style={styles.label}>Upload Images</Text>
           <TouchableOpacity
             onPress={pickImage}
             style={{
@@ -202,15 +202,15 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
           <TouchableOpacity
             style={styles.createpostButton}
             onPress={() => {
-              setShowPost(false);
-              setShowButton(true);
+              // setShowPost(false);
+              // setShowButton(true);
             }}
           >
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.createpostButton}
-            // onPress={postformik.handleSubmit}
+            onPress={()=>{postformik.handleSubmit()}}
           >
             <Text style={styles.buttonText}>Create Post</Text>
           </TouchableOpacity>
@@ -221,7 +221,7 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  postContainer: {
     flex: 1,
     padding: 10,
   },
@@ -291,4 +291,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  label:{
+    fontSize: 16,
+    fontWeight: "bold",
+  }
 });
