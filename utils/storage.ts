@@ -56,3 +56,35 @@ export const getStorageItem = async (key: string) => {
 export const deleteStorageItem = async (key: string) => {
     await storage.deleteItem(key);
 };
+
+export const getRandomRGBColor = (name: string) => {
+    if (!name) return 'rgba(156, 163, 175, 1)';
+    
+    const colors = [
+      'rgba(59, 130, 246, 1)',
+      'rgba(16, 185, 129, 1)',
+      'rgba(245, 158, 11, 1)',
+      'rgba(239, 68, 68, 1)',
+      'rgba(168, 85, 247, 1)',
+      'rgba(16, 185, 129, 1)',
+      'rgba(99, 102, 241, 1)',
+      'rgba(0, 150, 136,1)',
+    ];
+    
+    const hash = name
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    return colors[hash % colors.length];
+};
+
+export const getInitials = (name :string) => {
+    if (!name) return '';
+    
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  }
