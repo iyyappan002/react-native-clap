@@ -1,5 +1,5 @@
 import { usePostsQuery } from '@/api/queries'
-import PostCard from '@/components/post/PoctCard';
+import PostCard from '@/components/posts/PoctCard';
 import { Post } from '@/types/postTypes';
 import React from 'react'
 import { Text, View } from 'react-native'
