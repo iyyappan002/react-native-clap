@@ -71,3 +71,12 @@ export interface Pagination {
     hasNextPage: boolean
     hasPreviousPage: boolean
 }
+
+export interface LastMonthAchiever {
+    id: number
+    username: string
+    email: string
+    jobcode: string
+    role: string[]
+    total_sales: string
+  }
