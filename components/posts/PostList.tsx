@@ -11,7 +11,7 @@ function PostList(props: Props) {
     const { data, isLoading, isFetchingNextPage, refetch, hasNextPage, fetchNextPage } = usePostsQuery()
     const items = data?.pages.flatMap((page) => page.posts) || []; // Extracting posts
     return (
-       <View>
+       <View style={{paddingHorizontal:5}}>
          <FlatList
             data={items}
             keyExtractor={(item, index) => index?.toString()}
@@ -21,7 +21,7 @@ function PostList(props: Props) {
             refreshControl={
                 <RefreshControl refreshing={isFetchingNextPage} onRefresh={refetch} />
             }
-            ListFooterComponent={isFetchingNextPage ? <ActivityIndicator size="small" /> : null}
+            ListFooterComponent={isFetchingNextPage ? <ActivityIndicator size="large" style={{padding:20}} /> : null}
 
         />
         {isLoading && <ActivityIndicator size="large" /> }
