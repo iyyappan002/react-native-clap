@@ -1,11 +1,12 @@
 import { Post } from "@/types/postTypes";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { getInitials, getRandomRGBColor, getStorageItem } from "@/utils/storage";
 import { usePost } from "@/context/PostContext";
+import { router } from "expo-router";
 
 type Props = {
     post: Post;
@@ -13,66 +14,75 @@ type Props = {
 
 function PostCard({ post }: Props) {
     console.log({ post });
-    const { toggleLike, userData: user } = usePost();
+    const { toggleLike, userData: user, postView } = usePost();
     const isLiked = post.likedBy?.some(likes => likes.userId === user?.userId);
 
 
     const onLikesPress = async () => {
-        console.log("presse")
         toggleLike(post.id, user?.userId)
     }
 
+    const onCardPress = () => {
+        postView(post.id, user?.userId)
+        router.navigate({
+            pathname: "/posts/[id]",
+            params: { id: post.id },
+        })
+    }
+
     return (
-        <View style={styles.feedContainer}>
-            <View style={styles.feedHeader}>
-                <Text
-                    style={[
-                        styles.postLogoText,
-                        { backgroundColor: getRandomRGBColor(post.author.name) },
-                    ]}
-                >
-                    {getInitials(post.author.name)}
-                </Text>
-                <View style={styles.postTitle}>
-                    <View style={styles.postHeader}>
-                        <Text style={styles.postName}>{post.author.name}</Text>
-                        <Text style={styles.postTime}>{post.timestamp}</Text>
-                    </View>
-                    <Text>{post.author.jobcode}</Text>
-                </View>
-            </View>
-            {/* <View style={styles.employeeContainer}> */}
-            {/* <Chip mode='outlined' >@{post.employee.name}</Chip> */}
-            {/* </View> */}
-            <Text style={styles.postText}>{post.content}</Text>
-            <Image
-                source={{
-                    uri: post.images[0],
-                }}
-                resizeMode="cover"
-                style={styles.postImage}
-            />
-            <View style={styles.postActions}>
-                <View>
-                    <View style={styles.actionContainer}>
-                        <Text onPress={onLikesPress}>
-                            <MaterialCommunityIcons name="thumb-up" size={20} color={isLiked ? "blue" : "black"} />{" "}
-                            {post.metrics.likes}
-                        </Text>
-                        <Text>
-                            <FontAwesome name="comment-o" size={20} color="blue" />{" "}
-                            {post.metrics.commentsCount}
-                        </Text>
-                    </View>
-                </View>
-                <View style={{display:"flex", flexDirection:"row", gap:8, alignItems:"center"}}>
-                        <FontAwesome5 name="eye" size={20} color="blue" />
-                    <Text>
-                        {post.metrics.views} Views
+        <TouchableOpacity onPress={onCardPress}>
+            <View style={styles.feedContainer}>
+                <View style={styles.feedHeader}>
+                    <Text
+                        style={[
+                            styles.postLogoText,
+                            { backgroundColor: getRandomRGBColor(post.author.name) },
+                        ]}
+                    >
+                        {getInitials(post.author.name)}
                     </Text>
+                    <View style={styles.postTitle}>
+                        <View style={styles.postHeader}>
+                            <Text style={styles.postName}>{post.author.name}</Text>
+                            <Text style={styles.postTime}>{post.timestamp}</Text>
+                        </View>
+                        <Text>{post.author.jobcode}</Text>
+                    </View>
+                </View>
+                {/* <View style={styles.employeeContainer}> */}
+                {/* <Chip mode='outlined' >@{post.employee.name}</Chip> */}
+                {/* </View> */}
+                <Text style={styles.postText}>{post.content}</Text>
+                <Image
+                    source={{
+                        uri: post.images[0],
+                    }}
+                    resizeMode="cover"
+                    style={styles.postImage}
+                />
+                <View style={styles.postActions}>
+                    <View>
+                        <View style={styles.actionContainer}>
+                            <Text onPress={onLikesPress}>
+                                <MaterialCommunityIcons name="thumb-up" size={20} color={isLiked ? "blue" : "black"} />{" "}
+                                {post.metrics.likes}
+                            </Text>
+                            <Text>
+                                <FontAwesome name="comment-o" size={20} color="blue" />{" "}
+                                {post.metrics.commentsCount}
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={{ display: "flex", flexDirection: "row", gap: 8, alignItems: "center" }}>
+                        <FontAwesome5 name="eye" size={20} color="blue" />
+                        <Text>
+                            {post.metrics.views} Views
+                        </Text>
+                    </View>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
 
