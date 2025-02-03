@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery } from "react-query"
 import QUERY_CONSTANTS from "@/config/queryConfig"
 import apiClient from "./apiClient"
+import postService from "@/services/postService"
 
 // export const useMentionsQuery = (query) => {
 //     return useQuery({
@@ -16,11 +17,10 @@ import apiClient from "./apiClient"
 export const usePostsQuery = () => {
     return useInfiniteQuery({
         queryKey: ['posts'],
-        queryFn: ({ pageParam }) => apiClient.get("/post/list", { params: { page: pageParam } }),
-        getNextPageParam: (lastPage, allPages) => lastPage?.data?.data?.pagination?.hasNextPage
-            ? lastPage?.data?.data?.pagination?.currentPage + 1
+        queryFn: ({ pageParam }) => postService.getPosts({ params: { page: pageParam } }),
+        getNextPageParam: (lastPage, allPages) => lastPage?.pagination?.hasNextPage
+            ? lastPage?.pagination?.currentPage + 1
             : undefined,
-        getPreviousPageParam: (firstPage, pages) => firstPage?.data?.prev,
         keepPreviousData: true,
         staleTime: QUERY_CONSTANTS.staletime
     })
