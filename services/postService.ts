@@ -1,5 +1,5 @@
 import apiClient from "@/api/apiClient";
-import { Pagination, Post } from "@/types/postTypes";
+import { Pagination, Post, LastMonthAchiever } from "@/types/postTypes";
 import { AxiosRequestConfig } from "axios";
 
 const postService = {
@@ -8,6 +8,14 @@ const postService = {
         return {
             pagination: response?.data?.data?.pagination,
             posts: response?.data?.data?.posts,
+        };
+    },
+
+    async getLastMonthAchievers(request: any, config?: AxiosRequestConfig<any> | undefined): Promise<{ lastMonthAchievers: LastMonthAchiever[], pagination: Pagination }> {
+        const response = await apiClient.post(`/achievers/list`, request, config);
+        return {
+            pagination: response?.data?.data?.pagination,
+            lastMonthAchievers: response?.data?.data?.result,
         };
     },
 }

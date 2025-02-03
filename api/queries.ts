@@ -64,15 +64,14 @@ export const usePostsQuery = () => {
 //     })
 // }
 
-// export const useLastMonthAchieversQuery = () => {
-//     return useInfiniteQuery({
-//         queryKey: ['lastMonthAchievers'],
-//         queryFn: ({ pageParam=1 }) => postService.lastMonthAchievers({ page: pageParam }),
-//         getNextPageParam: (lastPage, allPages) => lastPage?.data?.pagination?.hasNextPage
-//             ? lastPage?.data?.pagination?.currentPage + 1
-//             : undefined,
-//         initialPageParam: 1,
-//         keepPreviousData: true,
-//         staleTime: QUERY_CONSTANTS.staletime
-//     })
-// }
+export const useLastMonthAchieversQuery = () => {
+    return useInfiniteQuery({
+        queryKey: ['lastMonthAchievers'],
+        queryFn: ({ pageParam = 1 }) => postService.getLastMonthAchievers({ page: pageParam }),
+        getNextPageParam: (lastPage, allPages) => lastPage?.pagination?.hasNextPage
+            ? lastPage?.pagination?.currentPage + 1
+            : undefined,
+        keepPreviousData: true,
+        staleTime: QUERY_CONSTANTS.staletime
+    })
+}
