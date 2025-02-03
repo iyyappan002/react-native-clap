@@ -178,6 +178,7 @@ export const PostProvider = ({ children }) => {
     }).then(() => {
       queryClient.invalidateQueries('lastMonthAchievers')
     })
+    console.log({postId, userId})
     postDispatch({ type: "toggleLike", postId, userId })
   };
 

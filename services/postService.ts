@@ -18,6 +18,16 @@ const postService = {
             lastMonthAchievers: response?.data?.data?.result,
         };
     },
+
+    async likePost(request: any) {
+        const response = await apiClient.post(`/post/like`, request);
+        return response.data;
+    },
+
+    async postView(request:any) {
+        const response = await apiClient.post(`/post/view`, request);
+        return response.data;
+    },
 }
 
 export default postService;
