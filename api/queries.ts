@@ -55,14 +55,14 @@ export const usePostsQuery = () => {
 // }
 
 
-// export const usePredefinedCommentsQuery = () => {
-//     return useQuery({
-//         queryKey: ['predefinedComments'],
-//         queryFn: () => postService.getPredefinedComments(),
-//         keepPreviousData: true,
-//         staleTime: QUERY_CONSTANTS.staletime
-//     })
-// }
+export const usePredefinedCommentsQuery = () => {
+    return useQuery({
+        queryKey: ['predefinedComments'],
+        queryFn: () => postService.getPredefinedComments(),
+        keepPreviousData: true,
+        staleTime: QUERY_CONSTANTS.staletime
+    })
+}
 
 export const useLastMonthAchieversQuery = () => {
     return useInfiniteQuery({

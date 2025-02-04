@@ -2,6 +2,7 @@ import { useLastMonthAchieversQuery } from "@/api/queries";
 import React, { useMemo } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import AcheiverCard from "./AcheiverCard";
+import SkeletonLoading from "expo-skeleton-loading";
 
 function AcheiversList() {
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
@@ -11,6 +12,68 @@ function AcheiversList() {
     return data?.pages?.at(0)?.lastMonthAchievers?.slice(0, 5) ?? [];
   }, [data?.pages]);
   console.log({ achievers, data: data?.pages });
+
+  if (isLoading)
+    return (
+      <SkeletonLoading background={"#cacaca"} highlight={"#ffffff"}>
+        <View
+          style={{
+            flexDirection: "column",
+            borderRadius: 10,
+            borderWidth: 1,
+            marginBottom: 15,
+            paddingBottom: 10,
+            paddingHorizontal: 2,
+          }}
+        >
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                marginTop: 10,
+                justifyContent: "space-between",
+                paddingBottom: 10,
+              }}
+            >
+              <View
+                style={{
+                  width: "40%",
+                  height: 20,
+                  backgroundColor: "#cacaca",
+                  borderRadius: 10,
+                }}
+              />
+              <View
+                style={{
+                  width: "20%",
+                  height: 20,
+                  backgroundColor: "#cacaca",
+                  borderRadius: 10,
+                }}
+              />
+            </View>
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  backgroundColor: "#cacaca",
+                  borderRadius: 40,
+                }}
+              />
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  backgroundColor: "#cacaca",
+                  borderRadius: 40,
+                }}
+              />
+            </View>
+          </View>
+        </View>
+      </SkeletonLoading>
+    );
 
   return (
     <View style={styles.container}>

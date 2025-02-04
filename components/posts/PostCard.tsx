@@ -4,6 +4,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Entypo from '@expo/vector-icons/Entypo';
 import {
   getInitials,
   getRandomRGBColor,
@@ -33,6 +34,31 @@ function PostCard({ post }: Props) {
     });
   };
 
+  const highlightText = (text :any) => {
+    const mentionPattern = /@(\w+(\.\w+)?)/gi; // Pattern to match @name and @name.surname
+    const hashtagPattern = /(#\w+)/g;
+
+    const parts = text.split(/(@\w+(?:\.\w+)?|#\w+)/g); // Pattern to match @name and @name.surname
+
+    return parts.map((part, index) => {
+        if (mentionPattern.test(part)) {
+            return (
+                <Text key={index} style={styles.mentions}>
+                    {part}
+                </Text>
+            );
+        } else if (hashtagPattern.test(part)) {
+            return (
+                <Text key={index} style={styles.mentions}>
+                    {part}
+                </Text>
+            );
+        } else {
+            return part;
+        }
+    });
+};
+
   return (
     <TouchableOpacity onPress={onCardPress}>
       <View style={styles.feedContainer}>
@@ -50,13 +76,13 @@ function PostCard({ post }: Props) {
               <Text style={styles.postName}>{post.author.name}</Text>
               <Text style={styles.postTime}>{post.timestamp}</Text>
             </View>
-            <Text>{post.author.jobcode}</Text>
+            <Text style={styles.postJob}>{post.author.jobcode}</Text>
           </View>
         </View>
-        {/* <View style={styles.employeeContainer}> */}
-        {/* <Chip mode='outlined' >@{post.employee.name}</Chip> */}
-        {/* </View> */}
-        <Text style={styles.postText}>{post.content}</Text>
+          <View style={styles.employeeContainer}>
+          <Text style={styles.employeeName}>@ {post.employee.name}</Text>
+          </View>
+        <Text style={styles.postText}>{highlightText(post.content)}</Text>
         {post.images.length > 0 && <Image
           source={{
             uri: post.images[0],
@@ -71,12 +97,13 @@ function PostCard({ post }: Props) {
                 <MaterialCommunityIcons
                   name="thumb-up"
                   size={20}
-                  color={isLiked ? "blue" : "black"}
+                  color={isLiked ? "blue" : "gray"}
                 />{" "}
                 {post.metrics.likes}
               </Text>
-              <Text>
-                <FontAwesome name="comment-o" size={20} color="blue" />{" "}
+              <Text style={{alignItems:'center'}}>
+                {/* <FontAwesome name="comment" size={20} color="black" />{" "} */}
+                <FontAwesome name="comment-o" size={20} color="gray" />{" "}
                 {post.metrics.commentsCount}
               </Text>
             </View>
@@ -89,7 +116,8 @@ function PostCard({ post }: Props) {
               alignItems: "center",
             }}
           >
-            <FontAwesome5 name="eye" size={20} color="blue" />
+            <FontAwesome5 name="eye" size={20} color="gray" />
+            {/* <Entypo name="eye" size={20} color="black" /> */}
             <Text>{post.metrics.views} Views</Text>
           </View>
         </View>
@@ -144,7 +172,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginTop: 10,
     shadowColor: "#000",
-    // Android Shadow
     elevation: 4,
   },
   feedHeader: {
@@ -180,6 +207,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#939393",
   },
+  postJob:{
+    color: "#939393",
+  },
   postText: {
     padding: 8,
     fontSize: 16,
@@ -207,14 +237,18 @@ const styles = StyleSheet.create({
   },
   employeeContainer: {
     textAlign: "center",
+    alignSelf: "flex-start",
     marginTop: 10,
-    borderRadius: 20,
+    paddingHorizontal:8,
+    paddingVertical: 5,
     color: "white",
-    // width:'40%'
+    backgroundColor: "rgb(25, 118, 210)",
+    borderRadius: 20,
   },
   employeeName: {
     color: "white",
     alignItems: "center",
+    textAlign:'center',
     backgroundColor: "rgb(25, 118, 210)",
   },
   galleryContainer: {
@@ -226,6 +260,9 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 8,
   },
+  mentions:{
+    color: "#2B93E7",
+  }
 });
 
 export default PostCard;

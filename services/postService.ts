@@ -37,7 +37,12 @@ const postService = {
     async createPost(postData :any) {
         const response = await apiClient.post('/posts/create', postData);
         return response.data;
-      },
+    },
+
+    async getPredefinedComments() {
+    const response = await apiClient.post(`/comment/dropdown`);
+    return response.data;
+    },
 }
 
 export default postService;
