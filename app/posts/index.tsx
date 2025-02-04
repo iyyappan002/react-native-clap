@@ -5,28 +5,28 @@ import PostList from '@/components/posts/PostList';
 import { Post } from '@/types/postTypes';
 import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { ActivityIndicator, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { navigate } from 'expo-router/build/global-state/routing';
+import { GestureHandlerRootView, NativeViewGestureHandler } from "react-native-gesture-handler";
+
 import { router } from 'expo-router';
 
 function Index() {
   return (
-    <View style={{
-      flex: 1,
-    }}>
-      <AcheiversList />
+    <>
       <PostList />
       <View style={styles.addButton}>
-      <TouchableOpacity onPress={() =>router.navigate("/posts/create")}>
-        <Ionicons name="add-circle" size={60} color="black" />
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.navigate("/posts/create")}>
+          <Ionicons name="add-circle" size={60} color="black" />
+        </TouchableOpacity>
       </View>
-    </View>
+    </>
+
   )
 }
 
 const styles = StyleSheet.create({
-  addButton:{
+  addButton: {
     position: 'absolute',
     zIndex: 10,
     right: 20,
