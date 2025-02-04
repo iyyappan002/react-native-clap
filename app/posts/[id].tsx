@@ -18,7 +18,7 @@ import {
   getStorageItem,
 } from "@/utils/storage";
 import { usePost } from "@/context/PostContext";
-import { router, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 
 function PostView() {
   const { id } = useLocalSearchParams();
@@ -38,6 +38,7 @@ function PostView() {
 
   return (
     <ScrollView>
+        <Stack.Screen options={{ headerTitle: post.author.name }} />
       <View style={styles.feedContainer}>
         <View style={styles.feedHeader}>
           <Text

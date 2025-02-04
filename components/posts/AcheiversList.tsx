@@ -14,32 +14,28 @@ function AcheiversList() {
 
   return (
     <View style={styles.container}>
-    <View style={styles.lastMonthCard}>
-      <View style={styles.lastMonthtitle}>
-        <Text style={styles.lastMonthText}>Last Month Achievers</Text>
-        <Text style={styles.seeAll}>See All</Text>
-      </View>
+      <View style={styles.lastMonthCard}>
+        <View style={styles.lastMonthtitle}>
+          <Text style={styles.lastMonthText}>Last Month Achievers</Text>
+          <Text style={styles.seeAll}>See All</Text>
+        </View>
         <ScrollView horizontal>
-            {achievers.map((achiever) => (
-                <AcheiverCard key={achiever.id.toString()} acheiver={achiever} />
-            ))}
+          {achievers.map((achiever) => (
+            <AcheiverCard key={achiever.id.toString()} acheiver={achiever} />
+          ))}
         </ScrollView>
-    </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 20,
-},
-lastMonthCard: {
-    borderRadius: 20,
+    paddingTop: 4,
+  },
+  lastMonthCard: {
+    backgroundColor: "white",
     padding: 20,
-    marginBottom: 10,
-    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.25)",
   },
   lastMonthtitle: {
     flexDirection: "row",

@@ -57,13 +57,13 @@ function PostCard({ post }: Props) {
         {/* <Chip mode='outlined' >@{post.employee.name}</Chip> */}
         {/* </View> */}
         <Text style={styles.postText}>{post.content}</Text>
-        <Image
+        {post.images.length > 0 && <Image
           source={{
             uri: post.images[0],
           }}
           resizeMode="cover"
           style={styles.postImage}
-        />
+        />}
         <View style={styles.postActions}>
           <View>
             <View style={styles.actionContainer}>
