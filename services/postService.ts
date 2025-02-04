@@ -28,6 +28,16 @@ const postService = {
         const response = await apiClient.post(`/post/view`, request);
         return response.data;
     },
+
+    async searchMentions(query :any) {
+        const response = await apiClient.get(`/users/search?query=${encodeURIComponent(query)}`);
+        return response.data;
+    },
+
+    async createPost(postData :any) {
+        const response = await apiClient.post('/posts/create', postData);
+        return response.data;
+      },
 }
 
 export default postService;

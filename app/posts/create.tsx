@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     FlatList,
     Image,
@@ -12,13 +12,21 @@ import { StyleSheet, Text, View } from "react-native";
 import * as Yup from "yup";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
+import postService from "@/services/postService";
+import { debounce } from "lodash";
+import { useMutation } from "react-query";
 
-export default function CreatePost({ setShowButton, setShowPost } : any) {
+
+
+
+export default function CreatePost() {
 
     const navigate = useNavigation();
   const [query, setQuery] = useState("");
   const [dropdownData, setDropdownData] = useState();
   const [showDropdown, setShowDropdown] = useState(false);
+  const createPostMutation = useMutation(postService.createPost)
+
 
 
   const postformik = useFormik({
@@ -38,63 +46,106 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
       employee: Yup.string().required("Employee is required"),
     }),
     onSubmit: (values, formikHelpers) => {
+      console.log(postformik.values, "values");
       if (postformik.isValid) {
-        console.log(postformik.values, "values");
+        // createPostMutation.mutate(postformik.values).then(() => {
+        //   navigate.navigate("index");
+        // });
+        createPostMutation.mutate(postformik.values, {
+          onSuccess: () => {
+              navigate.navigate("index");
+          },
+          onSettled: () => {
+            formikHelpers.setSubmitting(false)
+          }
+        });
+
       }
     },
   });
 
-//   const handleSearch = async (text) => {
-//     setQuery(text);
+  // const handleSearch = async (text) => {
+  //   setQuery(text);
 
-//     if (text) {
-//       try {
-//         const response = await GET(
-//           `${apiEndpoints.employeeSearch}?query=${text}`,
-//           {
-//             headers: { Authorization: `Bearer ${accessToken}` }, // If needed
-//           }
-//         );
+  //   if (text) {
+  //     try {
+  //       const response = await GET(
+  //         `${apiEndpoints.employeeSearch}?query=${text}`,
+  //         {
+  //           headers: { Authorization: `Bearer ${accessToken}` }, // If needed
+  //         }
+  //       );
 
-//         setDropdownData(response.data.users); // Update dropdown state
-//         console.log(dropdownData, "dropdownData", response.data.users);
-//         setShowDropdown(true);
-//       } catch (error) {
-//         console.error("Error fetching dropdown data:", error);
-//       }
-//     } else {
-//       postformik.setFieldValue("employee", "");
-//       setDropdownData([]);
-//       setShowDropdown(false);
-//     }
-//   };
+  //       setDropdownData(response.data.users); // Update dropdown state
+  //       console.log(dropdownData, "dropdownData", response.data.users);
+  //       setShowDropdown(true);
+  //     } catch (error) {
+  //       console.error("Error fetching dropdown data:", error);
+  //     }
+  //   } else {
+  //     postformik.setFieldValue("employee", "");
+  //     setDropdownData([]);
+  //     setShowDropdown(false);
+  //   }
+  // };
+
+  const fetchUsers = useCallback(
+    debounce(async (query, text) => {
+      if (query.length < 2) {
+        setDropdownData([]);
+        return;
+      }
+
+      try {
+        const data = await postService.searchMentions(query)
+
+        if (data.error) {
+          setDropdownData([]);
+          setShowDropdown(false);
+        } else {
+          setDropdownData(data.users);
+          setShowDropdown(true);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setDropdownData([]);
+        setShowDropdown(false);
+      }
+    }, 300), // 300ms delay
+    []
+  );
+
+  console.log(dropdownData,showDropdown,"show");
+  
+
+
 
   const pickImage = async () => {
     // Request permission to access media
-    // if (Platform.OS !== "web") {
-    //   const { status } =
-    //     await ImagePicker.requestMediaLibraryPermissionsAsync();
-    //   if (status !== "granted") {
-    //     alert("Sorry, we need permission to access your camera roll!");
-    //     return;
-    //   }
-    // }
+    if (Platform.OS !== "web") {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need permission to access your camera roll!");
+        return;
+      }
+    }
 
-    // // Launch image picker
-    // const result = await ImagePicker.launchImageLibraryAsync({
-    //   mediaType: ImagePicker.MediaTypeOptions.Images,
-    //   aspect: [4, 3],
-    //   quality: 1,
-    //   allowsMultipleSelection: true,
-    // });
+    // Launch image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaType: ImagePicker.MediaTypeOptions.Images,
+      aspect: [4, 3],
+      quality: 1,
+      allowsMultipleSelection: true,
+    });
 
-    // if (!result.canceled) {
-    //   const selectedImages = result.assets.map((asset :any) => asset.uri); // Collect image URIs
-    //   postformik.setFieldValue("images", selectedImages);
-    // }
+    if (!result.canceled) {
+      const selectedImages = result.assets.map((asset :any) => asset.uri); // Collect image URIs
+      postformik.setFieldValue("images", selectedImages);
+    }
   };
 
-  console.log(postformik.values.images, "images");
+  // console.log(postformik.values.images, "images");
 
   return (
     <ScrollView>
@@ -122,11 +173,12 @@ export default function CreatePost({ setShowButton, setShowPost } : any) {
             onChangeText={(text) => {
               // Update Formik's state
               // Dispatch action to update dropdown data
-            //   handleSearch(text);
+              // handleSearch(text);
+              fetchUsers(text);
               postformik.setFieldValue("search", text);
             }}
           />
-          {showDropdown && dropdownData && (
+          {(showDropdown && dropdownData && dropdownData?.length > 0) && (
             <FlatList
               style={styles.dropdown}
               data={dropdownData}
@@ -294,5 +346,24 @@ const styles = StyleSheet.create({
   label:{
     fontSize: 16,
     fontWeight: "bold",
+  },
+  dropdown:{
+    position: "absolute",
+    top: 75,
+    width: "100%",
+    height: 150,
+    overflow: "scroll",
+    borderColor: "grey",
+    borderRadius: 10,
+    backgroundColor: "white",
+    zIndex: 100,
+  },
+  dropdownItemContainer:{
+    padding: 10,
+    backgroundColor: "#f8f9fa",
+    marginBottom: 1,
+    borderBottomWidth: 1,
+    borderColor: "lightgrey",
+    justifyContent: "center",
   }
 });

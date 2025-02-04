@@ -14,7 +14,8 @@ function Index() {
     <View style={{
       flex: 1,
     }}>
-      <AcheiversList />
+      
+      {/* <AcheiversList /> */}
       <PostList />
       <View style={styles.addButton}>
       <TouchableOpacity onPress={() =>router.navigate("/posts/create")}>
