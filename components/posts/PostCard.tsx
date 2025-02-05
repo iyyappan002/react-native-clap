@@ -1,6 +1,6 @@
 import { Post } from "@/types/postTypes";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Image, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -17,7 +17,7 @@ type Props = {
   post: Post;
 };
 
-function PostCard({ post }: Props) {
+function PostCard({ post,scale }: Props) {
   console.log({ post });
   const { toggleLike, userData: user, postView } = usePost();
   const isLiked = post.likedBy?.some((likes) => likes.userId === user?.userId);
@@ -61,7 +61,7 @@ function PostCard({ post }: Props) {
 
   return (
     <TouchableOpacity onPress={onCardPress}>
-      <View style={styles.feedContainer}>
+      <Animated.View style={[styles.feedContainer]}>
         <View style={styles.feedHeader}>
           <Text
             style={[
@@ -121,7 +121,7 @@ function PostCard({ post }: Props) {
             <Text>{post.metrics.views} Views</Text>
           </View>
         </View>
-      </View>
+      </Animated.View>
     </TouchableOpacity>
   );
 }

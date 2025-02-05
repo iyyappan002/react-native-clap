@@ -1,6 +1,6 @@
 import { Post } from '@/types/postTypes'
-import React, { useEffect } from 'react'
-import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { ActivityIndicator, Alert, Animated, FlatList, Modal, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native'
 import PostCard from './PostCard'
 import { usePost } from '@/context/PostContext'
 import AcheiversList from './AcheiversList'
@@ -10,21 +10,56 @@ type Props = {
 }
 
 function PostList(props: Props) {
+    const [modalVisible, setModalVisible] = useState(false);
     const { posts, loadMorePosts, loading, hasMore, isNextPageLoading, refreshPost } = usePost();
     const items = posts || []; // Extracting posts
 
+    const scrollY = useRef(new Animated.Value(0)).current;
+
     useEffect(() => {
         refreshPost()
+
     }, [])
 
-    return (
+    return (<>
+            <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>You Have Logged In !!</Text>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Close</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
         <View style={{ paddingHorizontal: 5 }}>
-            <FlatList
+            <Animated.FlatList
                 ListHeaderComponent={<AcheiversList />}
+                // onScroll={Animated.event(
+                //     [{ nativeEvent : { contentOffset :{ y: scrollY }}}],
+                //     {useNativeDriver: true}
+                // )}
                 nestedScrollEnabled
                 data={items}
                 keyExtractor={(item, index) => index?.toString()}
-                renderItem={({ item }) => <PostCard key={item.id} post={item} />}
+                renderItem={({ item,index }) => {
+                    const inputRange = [-1,0, 1000 * index, 1000 * (index +1)]
+                    const scale = scrollY.interpolate({
+                        inputRange : [-100, 0], 
+                        outputRange :[2, 1],
+                        extrapolate: 'clamp'
+                    })
+                    return <PostCard key={item.id} post={item} scale={scale}/>
+                }}
                 onEndReached={() => hasMore && loadMorePosts()}
                 onEndReachedThreshold={0.5} // Load more when scrolled halfway
                 refreshControl={
@@ -61,7 +96,52 @@ function PostList(props: Props) {
                 ))
     }
         </View>
+        </>
     )
 }
+
+const styles = StyleSheet.create({
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        borderWidth:1,
+      },
+      button: {
+        // borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+      },
+      buttonOpen: {
+        backgroundColor: '#F194FF',
+      },
+      buttonClose: {
+        backgroundColor: '#2196F3',
+      },
+      textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+      },
+      modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+      },
+})
 
 export default PostList
