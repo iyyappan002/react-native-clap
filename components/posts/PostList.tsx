@@ -1,10 +1,11 @@
 import { Post } from '@/types/postTypes'
 import React, { useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Alert, Animated, FlatList, Modal, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, Animated, Button, FlatList, Modal, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native'
 import PostCard from './PostCard'
 import { usePost } from '@/context/PostContext'
 import AcheiversList from './AcheiversList'
 import SkeletonLoading from "expo-skeleton-loading";
+import { useCounterStore } from '@/app/useStore'
 
 type Props = {
 }
@@ -15,6 +16,9 @@ function PostList(props: Props) {
     const items = posts || []; // Extracting posts
 
     const scrollY = useRef(new Animated.Value(0)).current;
+
+    const { count, increment, decrement } = useCounterStore();
+    
 
     useEffect(() => {
         refreshPost()
@@ -32,7 +36,9 @@ function PostList(props: Props) {
           }}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <Text style={styles.modalText}>You Have Logged In !!</Text>
+              <Text style={styles.modalText}>You Have Logged In !! {count}</Text>
+              <Button title="Increase" onPress={increment} />
+              <Button title="Decrease" onPress={decrement} />
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}>
@@ -71,7 +77,7 @@ function PostList(props: Props) {
             {(loading || items?.length == 0) && 
                 Array.from({ length: 2 }).map((n,i) => (
             <SkeletonLoading 
-                background={"#cacaca"} highlight={"#ffffff"}>
+                background={"#cacaca"} highlight={"#ffffff"} key={i}>
                 <View style={{flexDirection:'column',borderRadius:10,borderWidth:1,marginBottom:15,paddingBottom:10,paddingHorizontal:2}}>
                     <View>
                         <View style={{ flexDirection: 'row',marginTop:20,gap:10 }}>

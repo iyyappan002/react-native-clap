@@ -1,6 +1,6 @@
 import { Post } from "@/types/postTypes";
 import React from "react";
-import { Animated, Image, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { Animated, Image, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View,Dimensions } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -25,6 +25,8 @@ function PostCard({ post,scale }: Props) {
   const onLikesPress = async () => {
     toggleLike(post.id, user?.userId);
   };
+  
+  const screenWidth = Dimensions.get("screen").width;
 
   const onCardPress = () => {
     postView(post.id, user?.userId);
@@ -90,6 +92,28 @@ function PostCard({ post,scale }: Props) {
           resizeMode="cover"
           style={styles.postImage}
         />}
+        {/* {(post.images.length > 0) && (
+                    <ScrollView 
+                      horizontal 
+                      showsHorizontalScrollIndicator={true}
+                      snapToInterval={450}
+                      // decelerationRate={"fast"}
+                      alwaysBounceHorizontal={true}
+                      showsVerticalScrollIndicator={true}
+                    >
+                      {post.images.map((imageUri, index) => (
+                        <Image
+                          key={index}
+                          source={{
+                            uri: imageUri,
+                          }}
+                          resizeMode="cover"
+                          height={200}
+                          width={400}
+                          />
+                        ))}
+                    </ScrollView>
+                  )} */}
         <View style={styles.postActions}>
           <View>
             <View style={styles.actionContainer}>
@@ -236,6 +260,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   employeeContainer: {
+    marginLeft: 5,
     textAlign: "center",
     alignSelf: "flex-start",
     marginTop: 10,

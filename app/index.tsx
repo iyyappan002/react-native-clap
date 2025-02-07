@@ -4,7 +4,7 @@ import { storeStorageItem } from "@/utils/storage";
 import { router } from "expo-router";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, TextInput, TouchableOpacity } from "react-native";
+import { ActivityIndicator, ScrollView, TextInput, TouchableOpacity,Dimensions } from "react-native";
 import {
   Image,
   Platform,
@@ -17,6 +17,7 @@ import CheckBox from "react-native-check-box";
 // import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 // import { loginByEmail } from "../store/Auth/authApi";
+import {  useDeviceOrientation } from '@react-native-community/hooks'
 
 
 export default function LoginScreen() {
@@ -24,6 +25,7 @@ export default function LoginScreen() {
   const loginMutation = useLoginMutation();
   const { setUserData } = usePost();
 
+  const orientation = useDeviceOrientation();
 
   //   const isLoggedIn = useSelector(state => state?.auth?.isLoggedIn);
 
@@ -71,10 +73,10 @@ export default function LoginScreen() {
     }),
   })
 
-  // console.log(formik.isValid,"valid",isLoggedIn);
 
   return (
-    <View style={styles.container}>
+    <ScrollView>
+    <View style={[styles.container,{ top: orientation == "landscape" ? 0 : "20%"}]}>
       {/* <Image source={require("../assets/Images/Logo.png")} /> */}
       <Text style={styles.loginText}>Welcome Back!!!</Text>
       <Text style={styles.subText}>Sign in into your account</Text>
@@ -130,13 +132,13 @@ export default function LoginScreen() {
 
       </View>
     </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    top: "15%",
     alignItems: "center",
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },

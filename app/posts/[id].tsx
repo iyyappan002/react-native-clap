@@ -1,6 +1,7 @@
 import { Post } from "@/types/postTypes";
 import React, { useMemo } from "react";
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -22,10 +23,15 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { usePredefinedCommentsQuery } from "@/api/queries";
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useDeviceOrientation } from "@react-native-community/hooks";
 
 
 function PostView() {
   const { id } = useLocalSearchParams();
+  const orientation = useDeviceOrientation();
+
+  const isLandScape = orientation === "landscape" ;
+
 
   const { toggleLike, userData: user, postView, posts } = usePost();
   const post: Post = useMemo(
@@ -71,133 +77,172 @@ function PostView() {
       });
   };
 
-  console.log(post.author.name, "author");
 
   return (
     <ScrollView>
-        <Stack.Screen options={{ headerTitle: post.author.name }} />
-      <View style={styles.feedContainer}>
-        <View style={styles.feedHeader}>
-          <Text
-            style={[
-              styles.postLogoText,
-              { backgroundColor: getRandomRGBColor(post.author.name) },
-            ]}
-          >
-            {getInitials(post.author.name)}
-          </Text>
-          <View style={styles.postTitle}>
-            <View style={styles.postHeader}>
-              <Text style={styles.postName}>{post.author.name}</Text>
-              <Text style={styles.postTime}>{post.timestamp}</Text>
-            </View>
-            <Text style={styles.postJob}>{post.author.jobcode}</Text>
-          </View>
-        </View>
-        <View style={styles.employeeContainer}>
-          <Text style={styles.employeeName}>@ {post.employee.name}</Text>
-          </View>
-        <Text style={styles.postText}>{highlightText(post.content)}</Text>
-        {post.images.length > 0 &&<Image
-          source={{
-            uri: post.images[0],
-          }}
-          resizeMode="cover"
-          style={styles.postImage}
-        />
-        }
-        <View style={styles.postActions}>
-          <View>
-            <View style={styles.actionContainer}>
-              <Text onPress={onLikesPress}>
-                <MaterialCommunityIcons
-                  name="thumb-up"
-                  size={20}
-                  color={isLiked ? "blue" : "gray"}
-                />{" "}
-                {post.metrics.likes}
-              </Text>
-              <Text>
-                <FontAwesome name="comment-o" size={20} color="gray" />{" "}
-                {post.metrics.commentsCount}
-              </Text>
-            </View>
-          </View>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              gap: 8,
-              alignItems: "center",
-            }}
-          >
-            <FontAwesome5 name="eye" size={20} color="gray" />
-            <Text>{post.metrics.views} Views</Text>
-          </View>
-        </View>
-      </View>
-      <View style={styles.commentContainer}>
-        {/* <View style={styles.commentInputContainer}>
-        <Dropdown
-          style={[styles.dropdown]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={commentsDropddown}
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          // placeholder={!isFocus ? 'Select item' : '...'}
-          searchPlaceholder="Search..."
-          // value={value}
-          // onFocus={() => setIsFocus(true)}
-          // onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            // setValue(item.value);
-            // setIsFocus(false);
-          }}
-          renderLeftIcon={() => (
-            <AntDesign
-              style={styles.icon}
-              // color={isFocus ? 'blue' : 'black'}
-              name="Safety"
-              size={20}
-            />
-          )}
-        />
-        </View> */}
-        <View style={styles.commentHeader}>
-          <Text style={styles.headerText}>Comments</Text>
-        </View>
+      <Stack.Screen options={{ headerTitle: post.author.name }} />
         <View>
-          {post.comments
-            .slice(0)
-            .reverse()
-            .map((comment, index) => (
-              <View key={index} style={styles.comment}>
-                <View style={styles.feedHeader}>
-                  <Text
-                    style={[
-                      styles.postLogoText,
-                      {
-                        backgroundColor: getRandomRGBColor(comment.author.name),
-                      },
-                    ]}
-                  >
-                    {getInitials(comment.author.name)}
-                  </Text>
-                  <View style={styles.postTitle}>
-                    <View style={styles.postHeader}>
-                      <Text style={styles.postName}>{post.author.name}</Text>
-                      <Text style={styles.postTime}>{post.timestamp}</Text>
-                    </View>
-                    <Text style={styles.postJob}>{comment.author.jobcode}</Text>
-                  </View>
-                </View>
-                <Text style={styles.commentText}>{comment.content}</Text>
+      <View style={isLandScape ? styles.landscape : styles.potrait}>
+{(post.images.length > 0 && isLandScape) && (
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={true}
+              snapToInterval={450}
+              // decelerationRate={"fast"}
+              alwaysBounceHorizontal={true}
+              showsVerticalScrollIndicator={true}
+            >
+              {post.images.map((imageUri, index) => (
+                <Image
+                  key={index}
+                  source={{
+                    uri: imageUri,
+                  }}
+                  height={200}
+                  width={450}
+                  />
+                ))}
+            </ScrollView>
+          )}
+          <View style={{width:isLandScape ? post.images.length > 0 ? "50%" : "100%" : "auto"}}>
+        <View style={styles.feedContainer}>
+          <View style={styles.feedHeader}>
+            <Text
+              style={[
+                styles.postLogoText,
+                { backgroundColor: getRandomRGBColor(post.author.name) },
+              ]}
+            >
+              {getInitials(post.author.name)}
+            </Text>
+            <View style={styles.postTitle}>
+              <View style={styles.postHeader}>
+                <Text style={styles.postName}>{post.author.name}</Text>
+                <Text style={styles.postTime}>{post.timestamp}</Text>
               </View>
-            ))}
+              <Text style={styles.postJob}>{post.author.jobcode}</Text>
+            </View>
+          </View>
+          <View style={styles.employeeContainer}>
+            <Text style={styles.employeeName}>@ {post.employee.name}</Text>
+            </View>
+          <Text style={styles.postText}>{highlightText(post.content)}</Text>
+          {(post.images.length > 0 && !isLandScape) && (
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={true}
+              snapToInterval={400}
+              decelerationRate={"fast"}
+              alwaysBounceHorizontal={true}
+              showsVerticalScrollIndicator={true}
+            >
+              {post.images.map((imageUri, index) => (
+                <Image
+                  key={index}
+                  source={{
+                    uri: imageUri,
+                  }}
+                  height={200}
+                  width={400}
+                  />
+                ))}
+            </ScrollView>
+          )}
+          <View style={styles.postActions}>
+            <View>
+              <View style={styles.actionContainer}>
+                <Text onPress={onLikesPress}>
+                  <MaterialCommunityIcons
+                    name="thumb-up"
+                    size={20}
+                    color={isLiked ? "blue" : "gray"}
+                  />{" "}
+                  {post.metrics.likes}
+                </Text>
+                <Text>
+                  <FontAwesome name="comment-o" size={20} color="gray" />{" "}
+                  {post.metrics.commentsCount}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 8,
+                alignItems: "center",
+              }}
+            >
+              <FontAwesome5 name="eye" size={20} color="gray" />
+              <Text>{post.metrics.views} Views</Text>
+            </View>
+          </View>
+        </View>
+          <View style={styles.commentContainer}>
+            {/* <View style={styles.commentInputContainer}>
+            <Dropdown
+              style={[styles.dropdown]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={commentsDropddown}
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              // placeholder={!isFocus ? 'Select item' : '...'}
+              searchPlaceholder="Search..."
+              // value={value}
+              // onFocus={() => setIsFocus(true)}
+              // onBlur={() => setIsFocus(false)}
+              onChange={item => {
+                // setValue(item.value);
+                // setIsFocus(false);
+              }}
+              renderLeftIcon={() => (
+                <AntDesign
+                  style={styles.icon}
+                  // color={isFocus ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
+            </View> */}
+            <View style={styles.commentHeader}>
+              <Text style={styles.headerText}>Comments</Text>
+            </View>
+            <View>
+              {post.comments
+                .slice(0)
+                .reverse()
+                .map((comment, index) => (
+                  <View key={index} style={styles.comment}>
+                    <View style={styles.feedHeader}>
+                      <Text
+                        style={[
+                          styles.postLogoText,
+                          {
+                            backgroundColor: getRandomRGBColor(comment.author.name),
+                          },
+                        ]}
+                      >
+                        {getInitials(comment.author.name)}
+                      </Text>
+                      <View style={styles.postTitle}>
+                        <View style={styles.postHeader}>
+                          <Text style={styles.postName}>{post.author.name}</Text>
+                          <Text style={styles.postTime}>{post.timestamp}</Text>
+                        </View>
+                        <Text style={styles.postJob}>{comment.author.jobcode}</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.commentText}>{comment.content}</Text>
+                  </View>
+                ))}
+            </View>
+          </View>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -249,7 +294,6 @@ const styles = StyleSheet.create({
   feedContainer: {
     backgroundColor: "white",
     shadowColor: "#000",
-    // Android Shadow
     elevation: 4,
   },
   feedHeader: {
@@ -316,6 +360,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignSelf: "flex-start",
     marginTop: 10,
+    marginLeft: 5,
     paddingHorizontal:8,
     paddingVertical: 5,
     color: "white",
@@ -330,7 +375,6 @@ const styles = StyleSheet.create({
   },
   commentContainer: {
     marginTop: 10,
-
   },
   comment: {
     backgroundColor: "white",
@@ -357,6 +401,13 @@ const styles = StyleSheet.create({
   headerText:{
     fontSize: 18,
     fontWeight: "bold",
+  },
+  landscape:{
+    flexDirection: "row",
+    justifyContent:"flex-end"
+  },
+  potrait:{
+    flexDirection: "column"
   }
   
 });
